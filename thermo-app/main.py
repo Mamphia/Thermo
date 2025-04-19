@@ -7,6 +7,7 @@ from utils import (
     save_line_profile,
     save_contour_plot
 )
+import traceback
 
 app = Flask(__name__)
 
@@ -48,7 +49,7 @@ def index():
             }
 
     except Exception as e:
-        print("🔥 INTERNAL ERROR:", e)
+        traceback.print_exc()  # <-- Log full error
 
     return render_template("index.html", result=result)
 
