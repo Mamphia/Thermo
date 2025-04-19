@@ -8,6 +8,7 @@ from utils import (
     save_contour_plot
 )
 import traceback
+import signal
 
 app = Flask(__name__)
 
@@ -21,17 +22,25 @@ def index():
             flow_rate = float(request.form["flow_rate"])
             alpha = float(request.form["alpha"])
 
-            # Run simulation (return final + time series)
+            # ⏱ Add timeout handler
+            def handler(signum, frame):
+                raise TimeoutError("⏳ Simulation took too long.")
+
+            signal.signal(signal.SIGALRM, handler)
+            signal.alarm(10)
+
+            # Run simulation
             temp_matrix, temp_record = run_simulation(length, width, flow_rate, alpha)
+            signal.alarm(0)  # ✅ Cancel timeout
+
             efficiency = predict_efficiency(length, width, flow_rate, alpha)
 
-            # Save all plots
+            # Save plots
             plot_path = save_temperature_plot(temp_matrix)
             anim_path = save_animation(temp_record)
             line_path = save_line_profile(temp_matrix)
             contour_path = save_contour_plot(temp_matrix)
 
-            # Dynamic engineering insight
             if efficiency < 60:
                 insight = "⚠️ Efficiency is low — consider increasing the flow rate or using a more thermally conductive material."
             elif 60 <= efficiency < 85:
@@ -48,8 +57,16 @@ def index():
                 "insight": insight
             }
 
+    except TimeoutError as te:
+        print("🔥 TIMEOUT:", te)
+        result = {
+            "efficiency": "Timeout",
+            "insight": "⏳ Simulation exceeded time limit. Try smaller values (reduce grid or time steps)."
+        }
+
     except Exception as e:
-        traceback.print_exc()  # <-- Log full error
+        print("🔥 INTERNAL ERROR:")
+        traceback.print_exc()
 
     return render_template("index.html", result=result)
 
