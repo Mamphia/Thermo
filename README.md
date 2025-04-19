@@ -138,4 +138,3 @@ Physics | Mechanical Engineering | Data Science
 ---
 
 ### ⭐ Like the project? Give it a star and share it with others!
-```
