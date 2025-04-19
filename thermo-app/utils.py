@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import os
 import uuid
 import numpy as np
+import shutil
 import matplotlib.animation as animation
 
 def ensure_plot_dir():
@@ -12,25 +13,30 @@ def save_temperature_plot(temp_matrix):
     fig, ax = plt.subplots()
     c = ax.imshow(temp_matrix, cmap="hot", origin="lower")
     fig.colorbar(c, ax=ax)
-    filename = f"{uuid.uuid4().hex}.png"
-    filepath = os.path.join("static/plots", filename)
-    plt.savefig(filepath)
+
+    tmp_path = f"/tmp/{uuid.uuid4().hex}.png"
+    static_rel_path = f"plots/{uuid.uuid4().hex}.png"
+    static_full_path = os.path.join("static", static_rel_path)
+
+    plt.savefig(tmp_path)
     plt.close()
-    return f"plots/{filename}"
+    shutil.copy(tmp_path, static_full_path)
+    return static_rel_path
 
 def save_animation(temp_record):
     ensure_plot_dir()
     fig, ax = plt.subplots()
-    ims = []
-    for T in temp_record:
-        im = ax.imshow(T, cmap="hot", animated=True, origin="lower")
-        ims.append([im])
+    ims = [ [ax.imshow(T, cmap="hot", animated=True, origin="lower")] for T in temp_record ]
     ani = animation.ArtistAnimation(fig, ims, interval=50, blit=True)
-    filename = f"{uuid.uuid4().hex}.gif"
-    filepath = os.path.join("static/plots", filename)
-    ani.save(filepath, writer="pillow")
+
+    tmp_path = f"/tmp/{uuid.uuid4().hex}.gif"
+    static_rel_path = f"plots/{uuid.uuid4().hex}.gif"
+    static_full_path = os.path.join("static", static_rel_path)
+
+    ani.save(tmp_path, writer="pillow")
     plt.close()
-    return f"plots/{filename}"
+    shutil.copy(tmp_path, static_full_path)
+    return static_rel_path
 
 def save_line_profile(temp_matrix):
     ensure_plot_dir()
@@ -40,11 +46,15 @@ def save_line_profile(temp_matrix):
     ax.set_title("1D Temperature Profile (Mid Row)")
     ax.set_xlabel("X position")
     ax.set_ylabel("Temperature (°C)")
-    filename = f"{uuid.uuid4().hex}_line.png"
-    filepath = os.path.join("static/plots", filename)
-    plt.savefig(filepath)
+
+    tmp_path = f"/tmp/{uuid.uuid4().hex}_line.png"
+    static_rel_path = f"plots/{uuid.uuid4().hex}_line.png"
+    static_full_path = os.path.join("static", static_rel_path)
+
+    plt.savefig(tmp_path)
     plt.close()
-    return f"plots/{filename}"
+    shutil.copy(tmp_path, static_full_path)
+    return static_rel_path
 
 def save_contour_plot(temp_matrix):
     ensure_plot_dir()
@@ -52,8 +62,12 @@ def save_contour_plot(temp_matrix):
     cp = ax.contourf(temp_matrix, cmap="hot")
     fig.colorbar(cp)
     ax.set_title("Contour Plot of Temperature")
-    filename = f"{uuid.uuid4().hex}_contour.png"
-    filepath = os.path.join("static/plots", filename)
-    plt.savefig(filepath)
+
+    tmp_path = f"/tmp/{uuid.uuid4().hex}_contour.png"
+    static_rel_path = f"plots/{uuid.uuid4().hex}_contour.png"
+    static_full_path = os.path.join("static", static_rel_path)
+
+    plt.savefig(tmp_path)
     plt.close()
-    return f"plots/{filename}"
+    shutil.copy(tmp_path, static_full_path)
+    return static_rel_path
