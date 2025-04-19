@@ -1,7 +1,0 @@
-Flask
-matplotlib
-numpy
-joblib
-xgboost
-scikit-learn
-pillow
