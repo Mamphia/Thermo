@@ -1,6 +1,6 @@
 import numpy as np
 
-def run_simulation(length, width, flow_rate, alpha, nx=50, ny=50, nt=100, dt=0.01):
+def run_simulation(length, width, flow_rate, alpha, nx=30, ny=30, nt=50, dt=0.01):
     dx = length / nx
     dy = width / ny
     T = np.ones((ny, nx)) * 20
